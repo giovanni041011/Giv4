@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GiShowcase - Portfolio & Galeri Giovanni Kyle</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            lms: {
+              navy: '#172A58',
+              navyHover: '#203872',
+              yellow: '#FCD34D',
+              cream: '#FBF7EE',
+              card: '#FFFFFF',
+              border: '#E8E0D0',
+              text: '#1E293B',
+              muted: '#64748B'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #FBF7EE; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+    canvas#synthetic-network {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .nav-item.active {
+      background-color: #FCD34D;
+      color: #172A58;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(252, 211, 77, 0.25);
+    }
+    .nav-item.active i {
+      color: #172A58;
+    }
+  </style>
+</head>
+<body class="bg-lms-cream text-lms-text antialiased min-h-screen relative overflow-x-hidden selection:bg-lms-yellow selection:text-lms-navy">
+
+  <!-- ANIMASI LATAR BELAKANG: TITIK & GARIS SINTETIK INTERAKTIF -->
+  <canvas id="synthetic-network"></canvas>
+
+  <!-- MOBILE TOPBAR -->
+  <div class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-lms-navy text-white z-40 px-4 flex items-center justify-between shadow-md">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-lg bg-lms-yellow text-lms-navy flex items-center justify-center font-extrabold">
+        <i data-lucide="award" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-sm leading-tight">GiShowcase</h1>
+        <p class="text-[10px] text-slate-300">PTE Thursina YBM PLN</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="openPasscodeModal()" class="p-2 rounded-lg bg-white/10 text-lms-yellow hover:bg-white/20 transition" title="Mode Admin">
+        <i data-lucide="lock" class="w-4 h-4"></i>
+      </button>
+      <button onclick="toggleMobileSidebar()" class="p-2 rounded-lg bg-white/10 text-white">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- OVERLAY MOBILE SIDEBAR -->
+  <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-30 hidden lg:hidden"></div>
+
+  <div class="flex min-h-screen relative z-10 pt-16 lg:pt-0">
+
+    <!-- SIDEBAR KIRI (GAYA LMS NAVY) -->
+    <aside id="sidebar" class="w-64 bg-lms-navy text-white flex flex-col justify-between shrink-0 fixed top-0 bottom-0 left-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl">
+      
+      <div class="p-5 flex flex-col gap-6 overflow-y-auto">
+        <!-- Header Logo & Tombol Gembok Admin -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-lms-yellow text-lms-navy flex items-center justify-center font-extrabold shadow-md shrink-0">
+              <i data-lucide="sparkles" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h1 class="font-extrabold text-base tracking-tight text-white leading-tight">GiShowcase</h1>
+              <p id="sb-subtitle" class="text-[11px] text-blue-200/80 font-medium">PTE Thursina YBM PLN</p>
+            </div>
+          </div>
+          <!-- Ikon Gembok untuk Dashboard Admin -->
+          <button onclick="openPasscodeModal()" class="p-2 rounded-lg text-blue-200 hover:text-lms-yellow hover:bg-white/10 transition" title="Buka Menu Edit Admin">
+            <i data-lucide="lock" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Menu Navigasi Utama -->
+        <nav class="flex flex-col gap-1.5 mt-1">
+          <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-100 hover:bg-lms-navyHover transition-all text-left">
+            <i data-lucide="home" class="w-4 h-4 shrink-0"></i>
+            <span>Beranda</span>
+          </button>
+
+          <button onclick="switchTab('foto-prestasi')" id="nav-foto-prestasi" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-100 hover:bg-lms-navyHover transition-all text-left">
+            <i data-lucide="trophy" class="w-4 h-4 shrink-0"></i>
+            <span>Foto Prestasi</span>
+          </button>
+
+          <button onclick="switchTab('foto-kenangan')" id="nav-foto-kenangan" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-100 hover:bg-lms-navyHover transition-all text-left">
+            <i data-lucide="image" class="w-4 h-4 shrink-0"></i>
+            <span>Foto Kenangan</span>
+          </button>
+
+          <button onclick="switchTab('video-prestasi')" id="nav-video-prestasi" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-100 hover:bg-lms-navyHover transition-all text-left">
+            <i data-lucide="award" class="w-4 h-4 shrink-0"></i>
+            <span>Video Prestasi</span>
+          </button>
+
+          <button onclick="switchTab('video-kenangan')" id="nav-video-kenangan" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-100 hover:bg-lms-navyHover transition-all text-left">
+            <i data-lucide="video" class="w-4 h-4 shrink-0"></i>
+            <span>Video Kenangan</span>
+          </button>
+
+          <button onclick="switchTab('advice')" id="nav-advice" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-100 hover:bg-lms-navyHover transition-all text-left">
+            <i data-lucide="message-square-quote" class="w-4 h-4 shrink-0"></i>
+            <span>Advice & Nasihat</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Footer Profil Pengguna di Sidebar Bawah -->
+      <div class="p-4 border-t border-white/10 bg-black/15">
+        <div onclick="openProfileLightbox()" class="flex items-center gap-3 p-2 rounded-xl hover:bg-white/10 cursor-pointer transition">
+          <div id="sb-avatar" class="w-10 h-10 rounded-full bg-white text-lms-navy font-extrabold flex items-center justify-center text-sm shrink-0 overflow-hidden border-2 border-lms-yellow">
+            GK
+          </div>
+          <div class="overflow-hidden">
+            <p id="sb-name" class="font-bold text-xs text-white truncate uppercase">GIOVANNI KYLE</p>
+            <p id="sb-role" class="text-[11px] text-blue-200/80 truncate">Siswa • KELAS IX</p>
+          </div>
+        </div>
+        <button onclick="openPasscodeModal()" class="mt-2.5 w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-white/20 hover:bg-white/10 text-xs font-semibold text-white transition">
+          <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-lms-yellow"></i>
+          <span>Kelola / Edit Web</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- AREA KONTEN UTAMA -->
+    <main class="flex-1 lg:ml-64 p-5 sm:p-8 max-w-[1400px] mx-auto w-full">
+
+      <!-- Header Sapaan (Mirip Gambar 1) -->
+      <header class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-lms-navy tracking-tight">
+            Hai, <span id="header-name" class="text-amber-600 uppercase">GIOVANNI KYLE</span>
+          </h2>
+          <p id="header-subtitle" class="text-xs sm:text-sm text-lms-muted mt-1 font-medium">
+            PTE Thursina YBM PLN • Portfolio Digital & Dokumentasi Perjalanan
+          </p>
+        </div>
+
+        <!-- Ikon Media Sosial Cepat -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <a id="btn-fb" href="#" target="_blank" class="w-9 h-9 rounded-full bg-white border border-lms-border shadow-xs flex items-center justify-center text-blue-600 hover:scale-110 hover:border-blue-400 transition" title="Facebook">
+            <i data-lucide="facebook" class="w-4 h-4"></i>
+          </a>
+          <a id="btn-ig" href="#" target="_blank" class="w-9 h-9 rounded-full bg-white border border-lms-border shadow-xs flex items-center justify-center text-pink-600 hover:scale-110 hover:border-pink-400 transition" title="Instagram">
+            <i data-lucide="instagram" class="w-4 h-4"></i>
+          </a>
+          <a id="btn-gmail" href="#" class="w-9 h-9 rounded-full bg-white border border-lms-border shadow-xs flex items-center justify-center text-rose-600 hover:scale-110 hover:border-rose-400 transition" title="Gmail">
+            <i data-lucide="mail" class="w-4 h-4"></i>
+          </a>
+          <a id="btn-tiktok" href="#" target="_blank" class="w-9 h-9 rounded-full bg-white border border-lms-border shadow-xs flex items-center justify-center text-slate-900 hover:scale-110 hover:border-slate-400 transition" title="TikTok">
+            <i data-lucide="music-2" class="w-4 h-4"></i>
+          </a>
+          <a id="btn-wa" href="#" target="_blank" class="w-9 h-9 rounded-full bg-white border border-lms-border shadow-xs flex items-center justify-center text-emerald-600 hover:scale-110 hover:border-emerald-400 transition" title="WhatsApp">
+            <i data-lucide="phone" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </header>
+
+      <!-- ========================================================= -->
+      <!-- TAB 1: BERANDA (LAYOUT 2 KOLOM SEPERTI LMS GAMBAR 1)      -->
+      <!-- ========================================================= -->
+      <section id="tab-beranda" class="tab-panel block">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- KOLOM KIRI (2/3 LEBAR): CERITA SINGKAT & SOROTAN -->
+          <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Kartu Cerita Singkat -->
+            <div class="bg-white/95 backdrop-blur-xs border border-lms-border rounded-2xl p-6 shadow-sm">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                  </div>
+                  <h3 class="font-bold text-base text-lms-navy">Cerita Singkat & Perjalanan</h3>
+                </div>
+                <span class="text-xs font-semibold px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">Biografi</span>
+              </div>
+
+              <!-- Kutipan Utama -->
+              <blockquote id="home-quote" class="p-4 rounded-xl bg-lms-cream border-l-4 border-lms-navy text-sm italic text-slate-700 mb-5">
+                "Merantaulah! Karena kalian akan mendapatkan pengganti atas apa yang kalian tinggalkan."
+              </blockquote>
+
+              <!-- Isi Cerita Singkat -->
+              <div id="home-story-body" class="text-sm text-slate-700 leading-relaxed space-y-3 whitespace-pre-line">
+                Assalamu'alaikum warahmatullahi wabarakatuh. Saya Giovanni Kyle, santri dan pelajar di PTE Thursina YBM PLN. Website GiShowcase ini adalah ruang dokumentasi digital untuk menyimpan setiap jejak langkah, karya desain, pencapaian prestasi, serta kenangan berharga selama menuntut ilmu.
+              </div>
+            </div>
+
+            <!-- Kartu Ringkasan Kategori Galeri (Mirip Kartu Mata Pelajaran di Gambar 1) -->
+            <div class="bg-white/95 backdrop-blur-xs border border-lms-border rounded-2xl p-6 shadow-sm">
+              <div class="flex items-center gap-2.5 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-blue-100 text-lms-navy flex items-center justify-center">
+                  <i data-lucide="folder-kanban" class="w-4 h-4"></i>
+                </div>
+                <h3 class="font-bold text-base text-lms-navy">Koleksi Dokumentasi</h3>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Card Foto Prestasi -->
+                <div onclick="switchTab('foto-prestasi')" class="cursor-pointer group rounded-xl border border-lms-border bg-white overflow-hidden hover:shadow-md transition">
+                  <div class="h-1.5 bg-teal-600"></div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h4 class="font-bold text-sm text-lms-navy group-hover:text-teal-700 transition">FOTO PRESTASI</h4>
+                        <p class="text-xs text-lms-muted mt-0.5">Piagam, Lomba & Tasmi' Al-Qur'an</p>
+                      </div>
+                      <i data-lucide="trophy" class="w-5 h-5 text-teal-600"></i>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-600">
+                      <span>Total Tersimpan</span>
+                      <span id="count-foto-prestasi" class="text-lms-navy font-bold">0 Item</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card Foto Kenangan -->
+                <div onclick="switchTab('foto-kenangan')" class="cursor-pointer group rounded-xl border border-lms-border bg-white overflow-hidden hover:shadow-md transition">
+                  <div class="h-1.5 bg-pink-600"></div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h4 class="font-bold text-sm text-lms-navy group-hover:text-pink-700 transition">FOTO KENANGAN</h4>
+                        <p class="text-xs text-lms-muted mt-0.5">Momen Kebersamaan & Kegiatan</p>
+                      </div>
+                      <i data-lucide="image" class="w-5 h-5 text-pink-600"></i>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-600">
+                      <span>Total Tersimpan</span>
+                      <span id="count-foto-kenangan" class="text-lms-navy font-bold">0 Item</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card Video Prestasi -->
+                <div onclick="switchTab('video-prestasi')" class="cursor-pointer group rounded-xl border border-lms-border bg-white overflow-hidden hover:shadow-md transition">
+                  <div class="h-1.5 bg-amber-500"></div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h4 class="font-bold text-sm text-lms-navy group-hover:text-amber-600 transition">VIDEO PRESTASI</h4>
+                        <p class="text-xs text-lms-muted mt-0.5">Dokumentasi Penampilan & Karya</p>
+                      </div>
+                      <i data-lucide="award" class="w-5 h-5 text-amber-500"></i>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-600">
+                      <span>Total Tersimpan</span>
+                      <span id="count-video-prestasi" class="text-lms-navy font-bold">0 Item</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card Video Kenangan -->
+                <div onclick="switchTab('video-kenangan')" class="cursor-pointer group rounded-xl border border-lms-border bg-white overflow-hidden hover:shadow-md transition">
+                  <div class="h-1.5 bg-indigo-600"></div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h4 class="font-bold text-sm text-lms-navy group-hover:text-indigo-700 transition">VIDEO KENANGAN</h4>
+                        <p class="text-xs text-lms-muted mt-0.5">Arsip Video Perjalanan Santri</p>
+                      </div>
+                      <i data-lucide="video" class="w-5 h-5 text-indigo-600"></i>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs font-semibold text-slate-600">
+                      <span>Total Tersimpan</span>
+                      <span id="count-video-kenangan" class="text-lms-navy font-bold">0 Item</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- KOLOM KANAN (1/3 LEBAR): PROFIL SAYA & ADVICE SOROTAN (MIRIP GAMBAR 1) -->
+          <div class="space-y-6">
+            
+            <!-- Kartu Profil Belajar / Biodata -->
+            <div class="bg-white/95 backdrop-blur-xs border border-lms-border rounded-2xl p-6 shadow-sm">
+              <h3 class="text-xs font-extrabold uppercase tracking-wider text-rose-700 mb-4">PROFIL SAYA</h3>
+              
+              <div class="flex items-center gap-4 mb-5">
+                <div onclick="openProfileLightbox()" id="card-avatar" class="w-16 h-16 rounded-full bg-lms-cream border-2 border-lms-navy text-lms-navy font-extrabold text-xl flex items-center justify-center cursor-pointer hover:scale-105 transition overflow-hidden shrink-0">
+                  GK
+                </div>
+                <div>
+                  <p class="text-xs text-lms-muted">Tingkat / Status</p>
+                  <span id="card-badge" class="inline-block mt-1 px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs">
+                    Santri & Kreator
+                  </span>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-lms-cream/70 border border-lms-border">
+                <p class="text-xs text-lms-muted font-medium">Hafalan / Pencapaian:</p>
+                <p id="card-highlight-stat" class="text-2xl font-extrabold text-rose-700 mt-0.5">10 Juz <span class="text-xs font-semibold text-slate-500">Mutqin</span></p>
+                
+                <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-lms-border text-xs">
+                  <div>
+                    <p class="text-lms-muted">Kelas</p>
+                    <p id="card-kelas" class="font-bold text-emerald-700 mt-0.5">KELAS IX</p>
+                  </div>
+                  <div>
+                    <p class="text-lms-muted">Fokus Minat</p>
+                    <p id="card-minat" class="font-bold text-lms-navy mt-0.5">Desain & Tahfidz</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kartu Advice / Nasihat Terbaru -->
+            <div class="bg-white/95 backdrop-blur-xs border border-lms-border rounded-2xl p-6 shadow-sm">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-sm text-lms-navy flex items-center gap-2">
+                  <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+                  Advice Pilihan
+                </h3>
+                <button onclick="switchTab('advice')" class="text-xs font-bold text-blue-600 hover:underline">Semua</button>
+              </div>
+              <div id="home-latest-advice" class="text-xs text-slate-600 bg-lms-cream/60 p-3.5 rounded-xl border border-lms-border leading-relaxed">
+                Belum ada nasihat ditambahkan.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- TAB 2: FOTO PRESTASI                                      -->
+      <!-- ========================================================= -->
+      <section id="tab-foto-prestasi" class="tab-panel hidden space-y-5">
+        <div class="bg-white/95 border border-lms-border rounded-2xl p-5 flex items-center justify-between shadow-xs">
+          <div>
+            <h3 class="font-extrabold text-lg text-lms-navy flex items-center gap-2">
+              <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
+              Galeri Foto Prestasi
+            </h3>
+            <p class="text-xs text-lms-muted mt-0.5">Klik pada foto mana pun untuk melihat dalam ukuran layar penuh.</p>
+          </div>
+          <button onclick="openPasscodeModal()" class="px-3.5 py-2 rounded-xl bg-lms-navy text-white text-xs font-bold hover:bg-lms-navyHover transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Foto
+          </button>
+        </div>
+        <div id="grid-foto-prestasi" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- TAB 3: FOTO KENANGAN                                      -->
+      <!-- ========================================================= -->
+      <section id="tab-foto-kenangan" class="tab-panel hidden space-y-5">
+        <div class="bg-white/95 border border-lms-border rounded-2xl p-5 flex items-center justify-between shadow-xs">
+          <div>
+            <h3 class="font-extrabold text-lg text-lms-navy flex items-center gap-2">
+              <i data-lucide="image" class="w-5 h-5 text-pink-600"></i>
+              Galeri Foto Kenangan
+            </h3>
+            <p class="text-xs text-lms-muted mt-0.5">Klik pada foto untuk memperbesar tampilan ke seluruh layar.</p>
+          </div>
+          <button onclick="openPasscodeModal()" class="px-3.5 py-2 rounded-xl bg-lms-navy text-white text-xs font-bold hover:bg-lms-navyHover transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Foto
+          </button>
+        </div>
+        <div id="grid-foto-kenangan" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- TAB 4: VIDEO PRESTASI                                     -->
+      <!-- ========================================================= -->
+      <section id="tab-video-prestasi" class="tab-panel hidden space-y-5">
+        <div class="bg-white/95 border border-lms-border rounded-2xl p-5 flex items-center justify-between shadow-xs">
+          <div>
+            <h3 class="font-extrabold text-lg text-lms-navy flex items-center gap-2">
+              <i data-lucide="award" class="w-5 h-5 text-emerald-600"></i>
+              Galeri Video Prestasi
+            </h3>
+            <p class="text-xs text-lms-muted mt-0.5">Mendukung file video langsung (MP4/WebM/Upload) maupun tautan video. Klik untuk memutar layar penuh.</p>
+          </div>
+          <button onclick="openPasscodeModal()" class="px-3.5 py-2 rounded-xl bg-lms-navy text-white text-xs font-bold hover:bg-lms-navyHover transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Video
+          </button>
+        </div>
+        <div id="grid-video-prestasi" class="grid grid-cols-1 sm:grid-cols-2 gap-5"></div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- TAB 5: VIDEO KENANGAN                                     -->
+      <!-- ========================================================= -->
+      <section id="tab-video-kenangan" class="tab-panel hidden space-y-5">
+        <div class="bg-white/95 border border-lms-border rounded-2xl p-5 flex items-center justify-between shadow-xs">
+          <div>
+            <h3 class="font-extrabold text-lg text-lms-navy flex items-center gap-2">
+              <i data-lucide="video" class="w-5 h-5 text-indigo-600"></i>
+              Galeri Video Kenangan
+            </h3>
+            <p class="text-xs text-lms-muted mt-0.5">Klik kartu video untuk memutar langsung di layar penuh.</p>
+          </div>
+          <button onclick="openPasscodeModal()" class="px-3.5 py-2 rounded-xl bg-lms-navy text-white text-xs font-bold hover:bg-lms-navyHover transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Video
+          </button>
+        </div>
+        <div id="grid-video-kenangan" class="grid grid-cols-1 sm:grid-cols-2 gap-5"></div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- TAB 6: ADVICE & NASIHAT                                   -->
+      <!-- ========================================================= -->
+      <section id="tab-advice" class="tab-panel hidden space-y-5">
+        <div class="bg-white/95 border border-lms-border rounded-2xl p-5 flex items-center justify-between shadow-xs">
+          <div>
+            <h3 class="font-extrabold text-lg text-lms-navy flex items-center gap-2">
+              <i data-lucide="message-square-quote" class="w-5 h-5 text-amber-600"></i>
+              Advice, Pesan & Nasihat
+            </h3>
+            <p class="text-xs text-lms-muted mt-0.5">Kumpulan nasihat berharga dari guru, pembina, orang tua, dan sahabat.</p>
+          </div>
+          <button onclick="openPasscodeModal()" class="px-3.5 py-2 rounded-xl bg-lms-navy text-white text-xs font-bold hover:bg-lms-navyHover transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Advice
+          </button>
+        </div>
+        <div id="grid-advice" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 1: INPUT PASSWORD ADMIN (30 juzz)                   -->
+  <!-- ========================================================= -->
+  <div id="modal-passcode" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white border border-lms-border rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-extrabold text-lms-navy flex items-center gap-2 text-base">
+          <i data-lucide="shield-check" class="w-5 h-5 text-amber-500"></i>
+          Akses Panel Edit Admin
+        </h3>
+        <button onclick="closeModal('modal-passcode')" class="text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-600">Masukkan kata sandi admin untuk mengedit seluruh isi website, foto profil, cerita beranda, medsos, dan galeri.</p>
+      <input type="password" id="passcode-input" onkeydown="if(event.key==='Enter') verifyPasscode()" placeholder="Masukkan sandi..." class="w-full bg-lms-cream border border-lms-border rounded-xl px-4 py-2.5 text-sm text-lms-navy font-semibold focus:outline-none focus:border-lms-navy">
+      <p id="passcode-error" class="text-xs text-rose-600 font-semibold hidden">Sandi salah! Silakan coba lagi.</p>
+      <button onclick="verifyPasscode()" class="w-full bg-lms-navy hover:bg-lms-navyHover text-white font-bold py-2.5 rounded-xl text-sm transition shadow-md">
+        Buka Dashboard Edit
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 2: DASHBOARD ADMIN LENGKAP                          -->
+  <!-- ========================================================= -->
+  <div id="modal-admin" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm hidden z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white border border-lms-border rounded-2xl w-full max-w-3xl my-auto max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Header Modal Admin -->
+      <div class="bg-lms-navy text-white px-6 py-4 flex items-center justify-between shrink-0">
+        <div>
+          <h3 class="font-extrabold text-base sm:text-lg flex items-center gap-2">
+            <i data-lucide="settings" class="w-5 h-5 text-lms-yellow"></i>
+            Dashboard Kontrol Penuh GiShowcase
+          </h3>
+          <p class="text-[11px] text-blue-200">Semua perubahan tersimpan otomatis ke Database Server Online</p>
+        </div>
+        <button onclick="closeModal('modal-admin')" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Tab Navigasi di Dalam Admin -->
+      <div class="flex border-b border-lms-border bg-lms-cream/60 px-4 pt-3 gap-2 overflow-x-auto shrink-0">
+        <button onclick="switchAdminSection('adm-profil')" id="btn-adm-profil" class="adm-tab-btn px-4 py-2 rounded-t-xl text-xs font-bold bg-white text-lms-navy border-t border-x border-lms-border">
+          1. Profil & Beranda
+        </button>
+        <button onclick="switchAdminSection('adm-medsos')" id="btn-adm-medsos" class="adm-tab-btn px-4 py-2 rounded-t-xl text-xs font-bold text-slate-500 hover:text-lms-navy">
+          2. Link Medsos
+        </button>
+        <button onclick="switchAdminSection('adm-tambah')" id="btn-adm-tambah" class="adm-tab-btn px-4 py-2 rounded-t-xl text-xs font-bold text-slate-500 hover:text-lms-navy">
+          3. Upload Foto / Video / Advice
+        </button>
+        <button onclick="switchAdminSection('adm-kelola')" id="btn-adm-kelola" class="adm-tab-btn px-4 py-2 rounded-t-xl text-xs font-bold text-slate-500 hover:text-lms-navy">
+          4. Kelola / Hapus Konten
+        </button>
+      </div>
+
+      <!-- Isi Modal Admin (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-1">
+        
+        <!-- SECTION ADMIN 1: PROFIL & CERITA BERANDA -->
+        <div id="adm-profil" class="adm-section space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap</label>
+              <input type="text" id="inp-name" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs font-medium">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Sub-Judul / Institusi</label>
+              <input type="text" id="inp-subtitle" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs font-medium">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Kelas / Role Sidebar</label>
+              <input type="text" id="inp-kelas" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs font-medium">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Status Badge</label>
+              <input type="text" id="inp-badge" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs font-medium">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Pencapaian Utama (Contoh: 10 Juz)</label>
+              <input type="text" id="inp-stat" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs font-medium">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Fokus Minat</label>
+              <input type="text" id="inp-minat" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs font-medium">
+            </div>
+          </div>
+
+          <!-- Foto Profil (Bisa Link atau Upload File) -->
+          <div class="p-4 rounded-xl bg-lms-cream/60 border border-lms-border space-y-2">
+            <label class="block text-xs font-bold text-lms-navy">Foto Profil (Upload dari Galeri atau Tempel Link)</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="inp-avatar-url" placeholder="https://... (atau pilih file di sebelah)" class="flex-1 bg-white border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+              <label class="cursor-pointer px-4 py-2 rounded-xl bg-lms-navy text-white text-xs font-bold hover:bg-lms-navyHover text-center shrink-0">
+                Pilih File Foto
+                <input type="file" id="inp-avatar-file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+              </label>
+            </div>
+          </div>
+
+          <!-- Kutipan & Cerita Beranda -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Kutipan Motto di Beranda</label>
+            <input type="text" id="inp-quote" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Cerita Singkat di Menu Beranda</label>
+            <textarea id="inp-story" rows="5" class="w-full border border-lms-border rounded-xl px-3.5 py-2.5 text-xs font-medium leading-relaxed"></textarea>
+          </div>
+
+          <button onclick="saveProfileAndHome()" class="w-full bg-lms-navy hover:bg-lms-navyHover text-white font-bold py-3 rounded-xl text-xs transition shadow-md">
+            Simpan Profil & Cerita Beranda
+          </button>
+        </div>
+
+        <!-- SECTION ADMIN 2: LINK MEDIA SOSIAL -->
+        <div id="adm-medsos" class="adm-section hidden space-y-4">
+          <p class="text-xs text-slate-600">Masukkan tautan akun media sosial kamu. Saat pengunjung mengklik ikon medsos di header, mereka akan langsung diarahkan ke tautan ini.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Link Instagram</label>
+              <input type="url" id="inp-ig" placeholder="https://instagram.com/username" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Link Facebook</label>
+              <input type="url" id="inp-fb" placeholder="https://facebook.com/username" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Link TikTok</label>
+              <input type="url" id="inp-tiktok" placeholder="https://tiktok.com/@username" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Gmail</label>
+              <input type="email" id="inp-gmail" placeholder="nama@gmail.com" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp (Gunakan kode negara 62, contoh: 628123456789)</label>
+              <input type="text" id="inp-wa" placeholder="6281234567890" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+            </div>
+          </div>
+          <button onclick="saveSocialLinks()" class="w-full bg-lms-navy hover:bg-lms-navyHover text-white font-bold py-3 rounded-xl text-xs transition shadow-md">
+            Simpan Tautan Media Sosial
+          </button>
+        </div>
+
+        <!-- SECTION ADMIN 3: TAMBAH / UPLOAD KONTEN -->
+        <div id="adm-tambah" class="adm-section hidden space-y-4">
+          <form onsubmit="handleAddContent(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Menu Tujuan</label>
+              <select id="add-category" onchange="updateAddFormUI()" class="w-full border border-lms-border rounded-xl px-3.5 py-2.5 text-xs font-bold text-lms-navy bg-lms-cream/50">
+                <option value="foto-prestasi">Foto Prestasi</option>
+                <option value="foto-kenangan">Foto Kenangan</option>
+                <option value="video-prestasi">Video Prestasi</option>
+                <option value="video-kenangan">Video Kenangan</option>
+                <option value="advice">Advice & Nasihat</option>
+              </select>
+            </div>
+
+            <div>
+              <label id="lbl-add-title" class="block text-xs font-bold text-slate-700 mb-1">Judul Foto / Video</label>
+              <input type="text" id="add-title" required placeholder="Contoh: Juara 1 MHQ 5 Juz Tingkat Kecamatan" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+            </div>
+
+            <div>
+              <label id="lbl-add-desc" class="block text-xs font-bold text-slate-700 mb-1">Keterangan / Tahun / Sumber Nasihat</label>
+              <input type="text" id="add-desc" placeholder="Contoh: Tahun 2026 • Asrama Thursina" class="w-full border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+            </div>
+
+            <!-- Input Media (Foto/Video) -->
+            <div id="media-upload-box" class="p-4 rounded-xl bg-lms-cream/60 border border-lms-border space-y-3">
+              <label class="block text-xs font-bold text-lms-navy">Sumber File Media</label>
+              <div class="flex gap-4 text-xs font-semibold">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="sourceMode" value="file" checked onchange="toggleSourceInput()"> Upload File dari Perangkat (HP/Laptop)
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="sourceMode" value="url" onchange="toggleSourceInput()"> Link URL (MP4 / Gambar / YouTube)
+                </label>
+              </div>
+
+              <div id="box-input-file">
+                <input type="file" id="add-file" accept="image/*,video/*" class="w-full bg-white border border-lms-border rounded-xl p-2 text-xs">
+                <p class="text-[11px] text-slate-500 mt-1">Video MP4/WebM dan foto akan otomatis diproses agar bisa langsung diputar tanpa YouTube.</p>
+              </div>
+
+              <div id="box-input-url" class="hidden">
+                <input type="url" id="add-url" placeholder="https://example.com/video.mp4 atau link gambar/YouTube" class="w-full bg-white border border-lms-border rounded-xl px-3.5 py-2 text-xs">
+              </div>
+            </div>
+
+            <button type="submit" id="btn-submit-content" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">
+              Simpan & Publikasikan Sekarang
+            </button>
+          </form>
+        </div>
+
+        <!-- SECTION ADMIN 4: KELOLA & HAPUS ITEM -->
+        <div id="adm-kelola" class="adm-section hidden space-y-3">
+          <p class="text-xs text-slate-600">Daftar seluruh konten yang tersimpan di server. Klik ikon sampah untuk menghapus.</p>
+          <div id="admin-items-list" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 3: LIGHTBOX FULLSCREEN (GAMBAR & VIDEO PLAYER)      -->
+  <!-- ========================================================= -->
+  <div id="lightbox-modal" onclick="if(event.target===this) closeLightbox()" class="fixed inset-0 bg-black/95 backdrop-blur-md hidden z-50 flex flex-col items-center justify-center p-4">
+    <button onclick="closeLightbox()" class="fixed top-5 right-5 z-50 p-2.5 rounded-full bg-white/15 hover:bg-white/30 text-white transition">
+      <i data-lucide="x" class="w-6 h-6"></i>
+    </button>
+    
+    <div id="lightbox-stage" class="w-full max-w-5xl max-h-[82vh] flex items-center justify-center overflow-hidden rounded-2xl">
+      <!-- Konten gambar atau video dirender di sini -->
+    </div>
+    
+    <div class="mt-4 text-center max-w-2xl px-4">
+      <h4 id="lightbox-title" class="text-white font-bold text-base sm:text-lg"></h4>
+      <p id="lightbox-desc" class="text-slate-300 text-xs sm:text-sm mt-1"></p>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SCRIPT UTAMA: FIREBASE REALTIME DB + ANIMASI + UI LOGIC   -->
+  <!-- ========================================================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Konfigurasi Firebase Server Online Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCenK0OQMqA1I6enr6egfFfewJ3xgFbRk",
+      authDomain: "gishowcase.firebaseapp.com",
+      databaseURL: "https://gishowcase-default-rtdb.firebaseio.com",
+      projectId: "gishowcase",
+      storageBucket: "gishowcase.firebasestorage.app",
+      messagingSenderId: "350867177009",
+      appId: "1:350867177009:web:58b6caf206783b4b47df10",
+      measurementId: "G-YWLVR29P8E"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, 'gishowcase_v2_data');
+
+    // Data Default Bawaan
+    let state = {
+      profile: {
+        name: "GIOVANNI KYLE",
+        subtitle: "PTE Thursina YBM PLN • Portfolio Digital & Dokumentasi",
+        kelas: "KELAS IX",
+        badge: "Santri & Kreator",
+        stat: "10 Juz",
+        minat: "Desain & Tahfidz",
+        avatar: "",
+        quote: "Merantaulah! Karena kalian akan mendapatkan pengganti atas apa yang kalian tinggalkan.",
+        story: "Assalamu'alaikum warahmatullahi wabarakatuh. Saya Giovanni Kyle, santri di PTE Thursina YBM PLN.\n\nWebsite GiShowcase ini dibuat sebagai ruang dokumentasi perjalanan belajar, hafalan Al-Qur'an, karya desain digital, serta momen kebersamaan yang penuh makna. Setiap pencapaian dan kenangan yang tersimpan di sini menjadi pengingat untuk terus bertumbuh dan bermanfaat bagi sesama."
+      },
+      socials: {
+        ig: "https://instagram.com",
+        fb: "https://facebook.com",
+        tiktok: "https://tiktok.com",
+        gmail: "giovanni@gmail.com",
+        wa: "6281234567890"
+      },
+      items: [
+        {
+          id: "item-1",
+          category: "foto-prestasi",
+          title: "Tasmi' Al-Qur'an 10 Juz (1-5, 26-30)",
+          desc: "28 Oktober 2026 • PTE Thursina YBM PLN",
+          mediaType: "image",
+          src: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=800&q=80"
+        },
+        {
+          id: "item-2",
+          category: "foto-kenangan",
+          title: "Kebersamaan Sahabat Asrama",
+          desc: "Momen Belajar & Diskusi Kelompok",
+          mediaType: "image",
+          src: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80"
+        },
+        {
+          id: "item-3",
+          category: "advice",
+          title: "Ilmu itu bukan yang dihafal semata, melainkan yang diamalkan dan membawa keberkahan dalam adab sehari-hari.",
+          desc: "Nasihat Pembina Asrama",
+          mediaType: "text",
+          src: ""
+        }
+      ]
+    };
+
+    // Sinkronisasi Real-Time dengan Server Firebase
+    onValue(dbRef, (snapshot) => {
+      const serverData = snapshot.val();
+      if (serverData) {
+        state.profile = { ...state.profile, ...(serverData.profile || {}) };
+        state.socials = { ...state.socials, ...(serverData.socials || {}) };
+        state.items = Array.isArray(serverData.items) ? serverData.items : [];
+      } else {
+        // Simpan data awal jika database masih kosong
+        saveToServer();
+      }
+      renderAll();
+    });
+
+    function saveToServer() {
+      set(dbRef, state).catch((err) => {
+        console.error("Gagal menyimpan ke server:", err);
+        alert("Gagal terhubung ke server database. Periksa koneksi internet Anda.");
+      });
+    }
+
+    // Render Seluruh Tampilan
+    function renderAll() {
+      const p = state.profile;
+      const s = state.socials;
+
+      // Update Header & Sidebar
+      document.getElementById('header-name').textContent = p.name;
+      document.getElementById('sb-name').textContent = p.name;
+      document.getElementById('header-subtitle').textContent = p.subtitle;
+      document.getElementById('sb-role').textContent = `Siswa • ${p.kelas}`;
+      document.getElementById('card-kelas').textContent = p.kelas;
+      document.getElementById('card-badge').textContent = p.badge;
+      document.getElementById('card-highlight-stat').innerHTML = `${p.stat} <span class="text-xs font-semibold text-slate-500">Capaian</span>`;
+      document.getElementById('card-minat').textContent = p.minat;
+      document.getElementById('home-quote').textContent = `"${p.quote}"`;
+      document.getElementById('home-story-body').textContent = p.story;
+
+      // Avatar
+      const initials = p.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'GK';
+      const avatarHTML = p.avatar
+        ? `<img src="${p.avatar}" alt="${p.name}" class="w-full h-full object-cover">`
+        : initials;
+      document.getElementById('sb-avatar').innerHTML = avatarHTML;
+      document.getElementById('card-avatar').innerHTML = avatarHTML;
+
+      // Links Media Sosial
+      document.getElementById('btn-ig').href = s.ig || '#';
+      document.getElementById('btn-fb').href = s.fb || '#';
+      document.getElementById('btn-tiktok').href = s.tiktok || '#';
+      document.getElementById('btn-gmail').href = s.gmail ? `mailto:${s.gmail}` : '#';
+      document.getElementById('btn-wa').href = s.wa ? `https://wa.me/${s.wa.replace(/[^0-9]/g, '')}` : '#';
+
+      // Hitung & Render Kategori
+      const cats = ['foto-prestasi', 'foto-kenangan', 'video-prestasi', 'video-kenangan'];
+      cats.forEach(cat => {
+        const list = state.items.filter(i => i.category === cat);
+        const countEl = document.getElementById(`count-${cat}`);
+        if (countEl) countEl.textContent = `${list.length} Item`;
+        renderMediaGrid(cat, list);
+      });
+
+      // Render Advice
+      const adviceList = state.items.filter(i => i.category === 'advice');
+      renderAdviceGrid(adviceList);
+      const latestAdviceEl = document.getElementById('home-latest-advice');
+      if (adviceList.length > 0) {
+        const last = adviceList[adviceList.length - 1];
+        latestAdviceEl.innerHTML = `<p class="italic text-slate-700">"${last.title}"</p><p class="font-bold text-lms-navy mt-2">— ${last.desc || 'Anonim'}</p>`;
+      } else {
+        latestAdviceEl.textContent = "Belum ada advice ditambahkan.";
+      }
+
+      renderAdminManageList();
+      lucide.createIcons();
+    }
+
+    function renderMediaGrid(category, list) {
+      const container = document.getElementById(`grid-${category}`);
+      if (!container) return;
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white/80 border border-dashed border-lms-border rounded-2xl p-10 text-center text-slate-500 text-xs">
+            Belum ada konten di kategori ini. Klik tombol <b>+ Tambah</b> di atas untuk mengunggah.
+          </div>`;
+        return;
+      }
+
+      const isVideo = category.startsWith('video');
+      container.innerHTML = list.map(item => {
+        if (!isVideo) {
+          return `
+            <div onclick="openMediaLightbox('${item.id}')" class="group cursor-pointer bg-white border border-lms-border rounded-2xl overflow-hidden shadow-xs hover:shadow-lg transition duration-300 flex flex-col">
+              <div class="aspect-video bg-slate-100 overflow-hidden relative">
+                <img src="${item.src}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute inset-0 bg-lms-navy/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                  <span class="px-3 py-1.5 rounded-full bg-white text-lms-navy text-xs font-bold flex items-center gap-1.5 shadow-md">
+                    <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Perbesar
+                  </span>
+                </div>
+              </div>
+              <div class="p-4 flex-1 flex flex-col justify-between">
+                <h4 class="font-bold text-sm text-lms-navy group-hover:text-amber-600 transition line-clamp-2">${item.title}</h4>
+                <p class="text-xs text-lms-muted mt-1.5">${item.desc || ''}</p>
+              </div>
+            </div>`;
+        } else {
+          const isYT = isYouTubeUrl(item.src);
+          const ytThumb = isYT ? `https://img.youtube.com/vi/${extractYouTubeId(item.src)}/hqdefault.jpg` : '';
+          return `
+            <div onclick="openMediaLightbox('${item.id}')" class="group cursor-pointer bg-white border border-lms-border rounded-2xl overflow-hidden shadow-xs hover:shadow-lg transition duration-300 flex flex-col">
+              <div class="aspect-video bg-slate-900 overflow-hidden relative flex items-center justify-center">
+                ${isYT 
+                  ? `<img src="${ytThumb}" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition duration-500">`
+                  : `<video src="${item.src}#t=0.5" preload="metadata" muted class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition duration-500"></video>`
+                }
+                <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <div class="w-12 h-12 rounded-full bg-lms-yellow text-lms-navy flex items-center justify-center shadow-xl group-hover:scale-110 transition">
+                    <i data-lucide="play" class="w-5 h-5 fill-current ml-0.5"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="p-4 flex-1 flex flex-col justify-between">
+                <h4 class="font-bold text-sm text-lms-navy group-hover:text-amber-600 transition line-clamp-2">${item.title}</h4>
+                <p class="text-xs text-lms-muted mt-1.5">${item.desc || 'Klik untuk memutar layar penuh'}</p>
+              </div>
+            </div>`;
+        }
+      }).join('');
+    }
+
+    function renderAdviceGrid(list) {
+      const container = document.getElementById('grid-advice');
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white/80 border border-dashed border-lms-border rounded-2xl p-10 text-center text-slate-500 text-xs">
+            Belum ada nasihat atau advice. Tambahkan melalui menu Edit Admin.
+          </div>`;
+        return;
+      }
+      container.innerHTML = list.map(item => `
+        <div class="bg-white border border-lms-border rounded-2xl p-6 shadow-xs flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1.5 h-full bg-lms-yellow"></div>
+          <p class="text-sm text-slate-700 italic leading-relaxed">"${item.title}"</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-xs font-extrabold text-lms-navy">— ${item.desc || 'Nasihat Bijak'}</span>
+            <i data-lucide="quote" class="w-4 h-4 text-amber-500"></i>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAdminManageList() {
+      const container = document.getElementById('admin-items-list');
+      if (!container) return;
+      if (state.items.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Belum ada item tersimpan.</p>`;
+        return;
+      }
+      container.innerHTML = state.items.map((item, idx) => `
+        <div class="flex items-center justify-between p-3 rounded-xl border border-lms-border bg-lms-cream/40">
+          <div class="overflow-hidden pr-3">
+            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-lms-navy text-white">${item.category}</span>
+            <p class="text-xs font-bold text-slate-800 truncate mt-1">${item.title}</p>
+          </div>
+          <button onclick="deleteItem(${idx})" class="p-2 rounded-lg bg-rose-100 text-rose-600 hover:bg-rose-600 hover:text-white transition shrink-0" title="Hapus">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // Helper YouTube
+    function isYouTubeUrl(url) {
+      return /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/.test(url);
+    }
+    function extractYouTubeId(url) {
+      const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+      return match ? match[1] : '';
+    }
+
+    // Ekspos Fungsi ke Global Window untuk Event HTML
+    window.switchTab = function(tabName) {
+      document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`nav-${tabName}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Tutup sidebar mobile jika terbuka
+      const sb = document.getElementById('sidebar');
+      const ov = document.getElementById('sidebar-overlay');
+      if (!sb.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+        sb.classList.add('-translate-x-full');
+        ov.classList.add('hidden');
+      }
+    };
+
+    window.toggleMobileSidebar = function() {
+      const sb = document.getElementById('sidebar');
+      const ov = document.getElementById('sidebar-overlay');
+      sb.classList.toggle('-translate-x-full');
+      ov.classList.toggle('hidden');
+    };
+
+    window.openPasscodeModal = function() {
+      document.getElementById('passcode-input').value = '';
+      document.getElementById('passcode-error').classList.add('hidden');
+      document.getElementById('modal-passcode').classList.remove('hidden');
+      setTimeout(() => document.getElementById('passcode-input').focus(), 100);
+    };
+
+    window.closeModal = function(id) {
+      document.getElementById(id).classList.add('hidden');
+    };
+
+    window.verifyPasscode = function() {
+      const val = document.getElementById('passcode-input').value.trim();
+      if (val === '30 juzz') {
+        closeModal('modal-passcode');
+        populateAdminInputs();
+        document.getElementById('modal-admin').classList.remove('hidden');
+      } else {
+        document.getElementById('passcode-error').classList.remove('hidden');
+      }
+    };
+
+    function populateAdminInputs() {
+      const p = state.profile;
+      const s = state.socials;
+      document.getElementById('inp-name').value = p.name;
+      document.getElementById('inp-subtitle').value = p.subtitle;
+      document.getElementById('inp-kelas').value = p.kelas;
+      document.getElementById('inp-badge').value = p.badge;
+      document.getElementById('inp-stat').value = p.stat;
+      document.getElementById('inp-minat').value = p.minat;
+      document.getElementById('inp-avatar-url').value = p.avatar || '';
+      document.getElementById('inp-quote').value = p.quote;
+      document.getElementById('inp-story').value = p.story;
+
+      document.getElementById('inp-ig').value = s.ig || '';
+      document.getElementById('inp-fb').value = s.fb || '';
+      document.getElementById('inp-tiktok').value = s.tiktok || '';
+      document.getElementById('inp-gmail').value = s.gmail || '';
+      document.getElementById('inp-wa').value = s.wa || '';
+    }
+
+    window.switchAdminSection = function(secId) {
+      document.querySelectorAll('.adm-section').forEach(el => el.classList.add('hidden'));
+      document.getElementById(secId).classList.remove('hidden');
+
+      document.querySelectorAll('.adm-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-lms-navy', 'border-t', 'border-x', 'border-lms-border');
+        btn.classList.add('text-slate-500');
+      });
+      const active = document.getElementById(`btn-${secId}`);
+      active.classList.add('bg-white', 'text-lms-navy', 'border-t', 'border-x', 'border-lms-border');
+      active.classList.remove('text-slate-500');
+    };
+
+    window.handleAvatarUpload = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        // Kompresi gambar avatar agar ringan disimpan di database
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const size = 250;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, size, size);
+          document.getElementById('inp-avatar-url').value = canvas.toDataURL('image/jpeg', 0.8);
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.saveProfileAndHome = function() {
+      state.profile = {
+        name: document.getElementById('inp-name').value.trim() || 'GIOVANNI KYLE',
+        subtitle: document.getElementById('inp-subtitle').value.trim(),
+        kelas: document.getElementById('inp-kelas').value.trim(),
+        badge: document.getElementById('inp-badge').value.trim(),
+        stat: document.getElementById('inp-stat').value.trim(),
+        minat: document.getElementById('inp-minat').value.trim(),
+        avatar: document.getElementById('inp-avatar-url').value.trim(),
+        quote: document.getElementById('inp-quote').value.trim(),
+        story: document.getElementById('inp-story').value.trim()
+      };
+      saveToServer();
+      alert('Profil dan Cerita Beranda berhasil disimpan permanen!');
+    };
+
+    window.saveSocialLinks = function() {
+      state.socials = {
+        ig: document.getElementById('inp-ig').value.trim(),
+        fb: document.getElementById('inp-fb').value.trim(),
+        tiktok: document.getElementById('inp-tiktok').value.trim(),
+        gmail: document.getElementById('inp-gmail').value.trim(),
+        wa: document.getElementById('inp-wa').value.trim()
+      };
+      saveToServer();
+      alert('Tautan Media Sosial berhasil diperbarui!');
+    };
+
+    window.updateAddFormUI = function() {
+      const cat = document.getElementById('add-category').value;
+      const mediaBox = document.getElementById('media-upload-box');
+      const lblTitle = document.getElementById('lbl-add-title');
+      const lblDesc = document.getElementById('lbl-add-desc');
+
+      if (cat === 'advice') {
+        mediaBox.classList.add('hidden');
+        lblTitle.textContent = 'Isi Nasihat / Kata Bijak';
+        lblDesc.textContent = 'Nama Pemberi Nasihat / Sumber';
+      } else {
+        mediaBox.classList.remove('hidden');
+        lblTitle.textContent = 'Judul Foto / Video';
+        lblDesc.textContent = 'Keterangan / Tahun / Lokasi';
+      }
+    };
+
+    window.toggleSourceInput = function() {
+      const mode = document.querySelector('input[name="sourceMode"]:checked').value;
+      document.getElementById('box-input-file').classList.toggle('hidden', mode !== 'file');
+      document.getElementById('box-input-url').classList.toggle('hidden', mode !== 'url');
+    };
+
+    window.handleAddContent = function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-content');
+      const cat = document.getElementById('add-category').value;
+      const title = document.getElementById('add-title').value.trim();
+      const desc = document.getElementById('add-desc').value.trim();
+
+      if (cat === 'advice') {
+        state.items.push({
+          id: 'item-' + Date.now(),
+          category: 'advice',
+          title,
+          desc,
+          mediaType: 'text',
+          src: ''
+        });
+        saveToServer();
+        e.target.reset();
+        alert('Advice berhasil ditambahkan!');
+        return;
+      }
+
+      const mode = document.querySelector('input[name="sourceMode"]:checked').value;
+      if (mode === 'url') {
+        const url = document.getElementById('add-url').value.trim();
+        if (!url) return alert('Masukkan URL media terlebih dahulu!');
+        state.items.push({
+          id: 'item-' + Date.now(),
+          category: cat,
+          title,
+          desc,
+          mediaType: cat.startsWith('video') ? 'video' : 'image',
+          src: url
+        });
+        saveToServer();
+        e.target.reset();
+        toggleSourceInput();
+        alert('Konten berhasil ditambahkan ke database!');
+      } else {
+        const fileInput = document.getElementById('add-file');
+        const file = fileInput.files[0];
+        if (!file) return alert('Pilih file foto atau video terlebih dahulu!');
+
+        btn.disabled = true;
+        btn.textContent = 'Memproses & Mengunggah ke Server...';
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const resultData = evt.target.result;
+          // Jika gambar, kompres ringan agar database tetap cepat
+          if (file.type.startsWith('image/')) {
+            const img = new Image();
+            img.onload = function() {
+              const canvas = document.createElement('canvas');
+              const maxW = 1000;
+              const scale = img.width > maxW ? maxW / img.width : 1;
+              canvas.width = img.width * scale;
+              canvas.height = img.height * scale;
+              canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+              
+              state.items.push({
+                id: 'item-' + Date.now(),
+                category: cat,
+                title,
+                desc,
+                mediaType: 'image',
+                src: canvas.toDataURL('image/jpeg', 0.82)
+              });
+              saveToServer();
+              btn.disabled = false;
+              btn.textContent = 'Simpan & Publikasikan Sekarang';
+              e.target.reset();
+              alert('Foto berhasil diunggah dan tersimpan permanen!');
+            };
+            img.src = resultData;
+          } else {
+            // File video langsung (MP4/WebM)
+            if (file.size > 15 * 1024 * 1024) {
+              btn.disabled = false;
+              btn.textContent = 'Simpan & Publikasikan Sekarang';
+              return alert('Ukuran file video maksimal 15MB agar cepat diputar dari database.');
+            }
+            state.items.push({
+              id: 'item-' + Date.now(),
+              category: cat,
+              title,
+              desc,
+              mediaType: 'video',
+              src: resultData
+            });
+            saveToServer();
+            btn.disabled = false;
+            btn.textContent = 'Simpan & Publikasikan Sekarang';
+            e.target.reset();
+            alert('Video berhasil diunggah dan siap diputar kapan saja!');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    window.deleteItem = function(index) {
+      if (confirm('Hapus konten ini secara permanen dari server?')) {
+        state.items.splice(index, 1);
+        saveToServer();
+      }
+    };
+
+    // Lightbox Fullscreen untuk Gambar & Video
+    window.openMediaLightbox = function(itemId) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      const stage = document.getElementById('lightbox-stage');
+      document.getElementById('lightbox-title').textContent = item.title;
+      document.getElementById('lightbox-desc').textContent = item.desc || '';
+
+      if (item.category.startsWith('foto')) {
+        stage.innerHTML = `<img src="${item.src}" class="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl">`;
+      } else {
+        if (isYouTubeUrl(item.src)) {
+          const vidId = extractYouTubeId(item.src);
+          stage.innerHTML = `<iframe src="https://www.youtube.com/embed/${vidId}?autoplay=1" class="w-full aspect-video max-h-[80vh] rounded-xl" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+        } else {
+          // Pemutar Video HTML5 Native (Berjalan lancar untuk file upload maupun link MP4 langsung)
+          stage.innerHTML = `<video src="${item.src}" controls autoplay playsinline class="max-h-[80vh] max-w-full rounded-xl bg-black shadow-2xl"></video>`;
+        }
+      }
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+    };
+
+    window.openProfileLightbox = function() {
+      const p = state.profile;
+      const stage = document.getElementById('lightbox-stage');
+      document.getElementById('lightbox-title').textContent = p.name;
+      document.getElementById('lightbox-desc').textContent = `${p.kelas} • ${p.subtitle}`;
+
+      if (p.avatar) {
+        stage.innerHTML = `<img src="${p.avatar}" class="max-h-[75vh] max-w-full object-contain rounded-2xl shadow-2xl">`;
+      } else {
+        stage.innerHTML = `<div class="w-48 h-48 rounded-full bg-lms-yellow text-lms-navy font-extrabold text-5xl flex items-center justify-center shadow-2xl">GK</div>`;
+      }
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+    };
+
+    window.closeLightbox = function() {
+      document.getElementById('lightbox-stage').innerHTML = '';
+      document.getElementById('lightbox-modal').classList.add('hidden');
+    };
+
+    // Inisialisasi ikon awal
+    lucide.createIcons();
+  </script>
+
+  <!-- ========================================================= -->
+  <!-- ANIMASI CANVAS: JARINGAN TITIK & GARIS SINTETIK INTERAKTIF-->
+  <!-- ========================================================= -->
+  <script>
+    const canvas = document.getElementById('synthetic-network');
+    const ctx = canvas.getContext('2d');
+    let width, height, particles = [];
+    const pointer = { x: null, y: null, radius: 140 };
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initParticles();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    // Interaksi Mouse & Sentuhan Layar
+    window.addEventListener('mousemove', (e) => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+    });
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        pointer.x = e.touches[0].clientX;
+        pointer.y = e.touches[0].clientY;
+      }
+    }, { passive: true });
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        pointer.x = e.touches[0].clientX;
+        pointer.y = e.touches[0].clientY;
+      }
+    }, { passive: true });
+    window.addEventListener('touchend', () => {
+      pointer.x = null;
+      pointer.y = null;
+    });
+
+    // Efek dorongan sintetik saat layar diklik/disentuh
+    window.addEventListener('click', (e) => {
+      particles.forEach(p => {
+        const dx = p.x - e.clientX;
+        const dy = p.y - e.clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 180 && dist > 0) {
+          const force = (180 - dist) / 180;
+          p.vx += (dx / dist) * force * 4;
+          p.vy += (dy / dist) * force * 4;
+        }
+      });
+    });
+
+    class NodeParticle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.9;
+        this.vy = (Math.random() - 0.5) * 0.9;
+        this.size = Math.random() * 2.2 + 1.5;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Perlambatan halus setelah dorongan sentuhan
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+        if (Math.abs(this.vx) < 0.25) this.vx += (Math.random() - 0.5) * 0.08;
+        if (Math.abs(this.vy) < 0.25) this.vy += (Math.random() - 0.5) * 0.08;
+
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+
+        // Reaksi terhadap kursor/sentuhan jari
+        if (pointer.x !== null && pointer.y !== null) {
+          const dx = pointer.x - this.x;
+          const dy = pointer.y - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < pointer.radius) {
+            this.x -= dx * 0.015;
+            this.y -= dy * 0.015;
+          }
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(23, 42, 88, 0.35)';
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      const count = Math.min(Math.floor((width * height) / 14000), 85);
+      for (let i = 0; i < count; i++) {
+        particles.push(new NodeParticle());
+      }
+    }
+
+    function animateNetwork() {
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+
+        // Hubungkan garis antar titik
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 130) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(23, 42, 88, ${(1 - dist / 130) * 0.22})`;
+            ctx.lineWidth = 1;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+
+        // Hubungkan garis ke kursor / titik sentuh
+        if (pointer.x !== null && pointer.y !== null) {
+          const dx = particles[i].x - pointer.x;
+          const dy = particles[i].y - pointer.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < pointer.radius) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(217, 119, 6, ${(1 - dist / pointer.radius) * 0.45})`;
+            ctx.lineWidth = 1.2;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(pointer.x, pointer.y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateNetwork);
+    }
+
+    resizeCanvas();
+    animateNetwork();
+  </script>
+</body>
+</html>
